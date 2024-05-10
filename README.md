@@ -1,4 +1,20 @@
-# Custom Linux/x86 Kernel Configuration
+# Mainline Linux kernel for WSL2 with ClearLinux patches applied
+This repo contains ready-made packages of the latest mainline Linux kernel for use in WSL2.
+ClearLinux patches are applied on top of the kernel for optimizations and performance improvements
+To build the kernel locally, use the build.sh script inside this repo.
+
+# Installation instruction for prebuilt packages
+1. Download the latest release of the kernel from the releases page
+2. Save the kernel where you want it to be located
+3. Ensure wsl is fully shut down before installing this kernel, to do that, run the `wsl --shutdown` command from a terminal
+4. Create a file (if it doesn't already exist) called .wslconfig in your username's home folder `C:\Users\YOUR USERNAME\.wslconfig`
+5. Add the following content to this file:
+   ```
+   [wsl2]
+   kernel=C:\\path\\to\\kernel\\bzimage-VERSION
+   ```
+
+# ORIGINAL README - Custom Linux/x86 Kernel Configuration
 Merge the last [linux kernel configuration from Microsoft for Windows Subsystem for Linux 2](https://github.com/microsoft/WSL2-Linux-Kernel/blob/linux-msft-wsl-6.1.y/Microsoft/config-wsl) with the [upstream torvalds linux sources](https://github.com/torvalds/linux/)
 
 ## Compile Mainline Kernel for WSL2
