@@ -9,8 +9,9 @@ To build the kernel locally, use the build.sh script inside this repo.
 3. Ensure wsl is fully shut down before installing this kernel, to do that, run the `wsl --shutdown` command from a terminal
 4. Create a file (if it doesn't already exist) called .wslconfig in your username's home folder `C:\Users\YOUR USERNAME\.wslconfig`
 5. Add the following content to this file:
-   ```[wsl2]
-   kernel=C:\\Users\\YOUR USERNAME\\bzImage-VERSION
+   ```
+   [wsl2]
+   kernel=C:\\path\\to\\kernel\\bzimage-VERSION
    ```
 
 # ORIGINAL README - Custom Linux/x86 Kernel Configuration
