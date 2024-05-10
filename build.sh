@@ -53,15 +53,10 @@ for patch in ../patches/*.patch; do
   patch -Np1 < "$patch"
 done
 
-_start=$SECONDS
-
 make O=../build/ olddefconfig
 make -j $(nproc --all) O=../build/
 
-_elapsedseconds=$(( SECONDS - _start ))
-TZ=UTC0 printf 'Kernel builded: %(%H:%M:%S)T\n' "$_elapsedseconds"
 echo "Kernel build finished: $(date -u '+%H:%M:%S')"
-
 powershell.exe /C 'Copy-Item -Force ..\build\arch\x86\boot\bzImage $env:USERPROFILE\bzImage-'$linux_version
 powershell.exe /C 'Write-Output [wsl2]`nkernel=$env:USERPROFILE\bzImage-'$linux_version' | % {$_.replace("\","\\")} | Out-File $env:USERPROFILE\.wslconfig -encoding ASCII'
 
