@@ -18,40 +18,40 @@ set -e
 mkdir -p linux
 pushd linux
 
-linux_url="https://github.com/torvalds/linux.git"
-
-if [ "$1" == "kernel" ]; then
-	linux_url="https://git.kernel.org/pub/scm/linux/kernel/git/stable/linux.git"
-fi
+linux_url="https://cdn.kernel.org/pub/linux/kernel/v6.x/linux-6.8.9.tar.xz"
+kernelversion=6.8.9
 
 echo -n "Housekeeping..."
 rm -rf ./build
+rm -rf ./linux-6.8.9
+rm -rf ./patches
 echo ""
 
-if [[ ! -d ./sources ]]; then
-	mkdir -p ./sources ./build
-	echo "Clonning kernel..."
-	git clone --depth 1 -b master ${linux_url} ./sources
-	cd sources/
+if [[ ! -d ./linux-6.8.9 ]]; then
+	mkdir -p ./build
+	echo "Fetching kernel..."
+	wget -O ${kernelversion}.tar.xz ${linux_url}
+	echo "Extracting kernel archive..."
+	tar xf ${kernelversion}.tar.xz
+	cd linux-6.8.9/
 else
 	mkdir ./build
-	cd sources/
-	echo "Feching kernel..."
-	git fetch --depth 1
-	git checkout --force --detach origin/master
+	cd linux-6.8.9/
 fi
-
-# ➜ du -hs sources/
-# 1.8G    sources/
-#
-# ➜ du -hs torvalds-linux-53b3c64/
-# 5.5G    torvalds-linux-53b3c64/
 
 linux_version=v$(make -s kernelversion)
 
 echo -n "Copy custom default config..."
 cp -f ../../Microsoft/config-wsl ../build/.config
 echo ""
+
+echo -n "Cloning ClearLinux patchset..."
+git clone https://github.com/Penguin766/wsl-kernel-patches -b main ../patches
+
+echo -n "Applying ClearLinux patches..."
+for patch in ../patches/*.patch; do
+  patch -Np1 < "$patch"
+done
 
 _start=$SECONDS
 
@@ -66,7 +66,3 @@ powershell.exe /C 'Copy-Item -Force ..\build\arch\x86\boot\bzImage $env:USERPROF
 powershell.exe /C 'Write-Output [wsl2]`nkernel=$env:USERPROFILE\bzImage-'$linux_version' | % {$_.replace("\","\\")} | Out-File $env:USERPROFILE\.wslconfig -encoding ASCII'
 
 popd
-
-# Install kernel modules (Optional)
-sudo make modules_install install O=../build/
-cat /lib/modules/6.3.0-oleksis-microsoft-standard-WSL2+/modules.builtin
